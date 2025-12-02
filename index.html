@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NESTFOAM - Generator stopki e-mail</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Cropper.js -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <style>
+    body { font-family: Barlow, serif; background:#C3C3C8; color:#444444; margin:0; padding:0; }
+    header { display:flex; align-items:center; gap:20px; padding:20px 40px; border-bottom:2px solid #F2B61C; background:#444444; color:#ffffff}
+    header img { width:80px; height:80px; border-radius:8px; object-fit:contain; }
+    h1 { margin:0; font-size:48px; font-weight:400; }
+
+    .container { display:flex; gap:40px; padding:40px; align-items:flex-start; }
+
+    .form-card { flex:1; background:#fff; padding:20px; border-radius:12px; border:1px solid #ddd; box-shadow:0 10px 16px rgba(0,0,0,0.1); }
+    label { display:block; margin-top:12px; font-weight:bold; }
+    input[type="text"], input[type="email"], input { width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-top:6px; box-sizing:border-box; }
+    button { background:#F2B61C; color:#444; border:none; padding:12px 30px; margin-top:20px; font-size:18px; font-weight:bold; border-radius:50px; cursor:pointer; }
+    button:hover { opacity:0.90; }
+
+    .preview {
+      flex:1;
+      border-left:2px solid #F2B61C;
+      padding-left:30px;
+      box-sizing:border-box;
+      position:sticky;
+      top:20px;
+    }
+
+    .iframe-wrap {
+      width:100%;
+      overflow:auto;
+      padding:4px;
+      box-sizing:border-box;
+    }
+
+    iframe {
+      width:100%;
+      max-width:600px;
+      height: calc(100vh - 400px);
+      border:1px solid #ccc;
+      border-radius:10px;
+      display:block;
+background:#ffffff;
+padding:20px;
+    }
+
+    .actions {
+      margin-top:15px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    @media(max-width:1100px){
+      .container{flex-direction:column;padding:20px;}
+      .preview{border-left:none;padding-left:0;position:static;}
+      iframe { width:100%; height:300px; }
+    }
+
+    /* MODAL KADROWANIA ZDJĘCIA */
+    #cropModal {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+	font-size:14px;
+    }
+    #cropBox {
+      background:#fff;
+      padding:40px;
+      border-radius:12px;
+      max-width:90%;
+      max-height:90%;
+      text-align:center;
+    }
+    #cropPreviewWrap {
+      width:320px;
+      height:320px;
+      margin:auto;
+      border-radius:50%;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+    }
+
+    #cropImage { max-width:100%; max-height:100%; display:block; }
+  </style>
+</head>
+<body>
+
+<!-- MODAL KADROWANIA ZDJĘCIA -->
+<div id="cropModal">
+  <div id="cropBox">
+ 
+    <div id="cropPreviewWrap">
+  <img id="cropImage" alt="Do kadrowania" />
+</div>
+<h3 style="margin:16px 0 12px 0;">Wykadruj zdjęcie, przesuwając prostokątny obszar i zmieniając jego wielkość.<br>Zoom można zmienić, scrollując kółkiem myszy.</h3>
+
+<!-- PANELE NARZĘDZI -->
+<div style="margin-top:16px; text-align:center;">
+
+  <!-- ZOOM -->
+  <div style="margin-bottom:18px; display:none">
+    <label style="font-weight:bold;">Zoom</label><br>
+    <input type="range" id="zoomSlider" min="0.2" max="3" step="0.01" value="1" style="width:260px;">
+  </div>
+
+  <!-- ROTATE -->
+  <div style="margin-bottom:18px; display:none">
+    <label style="font-weight:bold;">Obrót</label><br>
+    <input type="range" id="rotateSlider" min="-180" max="180" step="1" value="0" style="width:260px;">
+  </div>
+
+  <!-- RESET -->
+  <button id="cropReset" style="margin-top:10px; background:#fff; border:1px solid; padding:10px 16px;">Reset</button>
+
+  <div style="margin-top:2px; display:flex; gap:10px; justify-content:center;">
+    <button id="cropApply">Zastosuj</button>
+    <button id="cropCancel" style="background:#ccc;">Anuluj</button>
+  </div>
+</div>
+
+  </div>
+</div>
+
+<header>
+  <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/692f274b0c27738687176beb_Ellipse%2013.png" alt="Logo" />
+  <h1>NESTFOAM - GENERATOR STOPKI E-MAIL</h1>
+</header>
+
+<div class="container">
+
+  <div class="form-card">
+    <label>Imię i nazwisko</label>
+    <input id="name" placeholder="Jan Kowalski" type="text"/>
+
+    <label>Stanowisko</label>
+    <input id="position" placeholder="Customer Service Manager" type="text"/>
+
+    <label>Departament</label>
+    <input id="dept" placeholder="SALES DEPARTMENT" type="text"/>
+
+    <label>Miasto</label>
+    <input id="city" placeholder="Racibórz" type="text"/>
+
+    <label>Telefon</label>
+    <input id="phone" placeholder="+48 123 456 789" type="text"/>
+
+    <label>Email</label>
+    <input id="email" placeholder="jan.kowalski@nestfoam.pl" type="email"/>
+
+    <label>Zdjęcie (jpg/png)</label>
+    <input type="file" id="photo" accept="image/*" />
+    <img id="photoPreview" style="border-radius:50%; display:none; width:120px; height:120px; margin-top:10px; object-fit:cover;" />
+
+    <button id="generateBtn" style="margin-top:20px;">Generuj stopkę</button>
+  </div>
+
+  <div class="preview">
+    <h2 style="font-size:30px; line-height:80%; margin-top:0px">PODGLĄD</h2>
+
+    <div class="iframe-wrap">
+      <iframe id="signatureIframe" sandbox="allow-same-origin"></iframe>
+
+      <!-- PRZYCISKI POD PODGLĄDEM -->
+      <div class="actions">
+        <button id="downloadHtml">Pobierz HTML</button>
+        <button id="downloadTxt">Pobierz TXT</button>
+        <button id="copyBtn" style="background:#444;color:#fff">Kopiuj do schowka</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let photoDataUrl = "";
+const defaultPhoto = "https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/69242247e4b98f17174ab70e_Ellipse%2011.png";
+
+const photoInput = document.getElementById("photo");
+const photoPreview = document.getElementById("photoPreview");
+
+let cropper;
+const cropModal = document.getElementById("cropModal");
+const cropImage = document.getElementById("cropImage");
+const cropApply = document.getElementById("cropApply");
+const cropCancel = document.getElementById("cropCancel");
+
+photoInput.addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    cropImage.src = ev.target.result;
+
+    cropModal.style.display = "flex";
+
+    if (cropper) {
+      try { cropper.destroy(); } catch(e) {}
+      cropper = null;
+    }
+
+    cropper = new Cropper(cropImage, {
+      viewMode: 2,
+      dragMode: "move",
+      aspectRatio: 1,
+      autoCropArea: 1,
+      responsive: true,
+      background: false,
+      guides: false,
+      zoomable: true,
+      movable: true,
+      rotatable: true
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+cropCancel.addEventListener("click", () => {
+  cropModal.style.display = "none";
+  if (cropper) try { cropper.destroy(); } catch(e){}
+});
+
+const zoomSlider = document.getElementById("zoomSlider");
+const rotateSlider = document.getElementById("rotateSlider");
+const cropReset = document.getElementById("cropReset");
+
+zoomSlider.addEventListener("input", () => {
+  if (!cropper) return;
+  const newVal = parseFloat(zoomSlider.value);
+
+  const prevZoom = cropper.getData().scaleX || 1;
+  const factor = newVal / prevZoom;
+
+  cropper.zoom(factor);
+});
+
+rotateSlider.addEventListener("input", () => {
+  if (!cropper) return;
+  const deg = parseFloat(rotateSlider.value);
+  cropper.rotateTo(deg);
+});
+
+// RESET wszystkich ustawień
+cropReset.addEventListener("click", () => {
+  if (!cropper) return;
+
+  cropper.reset();
+
+  zoomSlider.value = 1;
+  rotateSlider.value = 0;
+});
+
+cropApply.addEventListener("click", () => {
+  if (!cropper) return;
+
+  const baseCanvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+
+  const size = 300;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(0,0,size,size);
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size/2, 0, Math.PI*2);
+  ctx.closePath();
+  ctx.clip();
+
+  ctx.drawImage(baseCanvas, 0, 0, size, size);
+
+  photoDataUrl = canvas.toDataURL("image/png");
+
+  photoPreview.src = photoDataUrl;
+  photoPreview.style.display = "block";
+
+  cropModal.style.display = "none";
+  try { cropper.destroy(); } catch(e){}
+  cropper = null;
+
+  generateSignature();
+});
+
+['name','position','dept','city','phone','email'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', generateSignature);
+});
+
+function escapeHtml(str){ return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* -CAŁA STOPKA- */
+function generateSignature(){
+  const name = escapeHtml(document.getElementById("name").value);
+  const position = escapeHtml(document.getElementById("position").value);
+  const dept = escapeHtml(document.getElementById("dept").value);
+  const city = escapeHtml(document.getElementById("city").value);
+  const phone = escapeHtml(document.getElementById("phone").value);
+  const email = escapeHtml(document.getElementById("email").value);
+  const photo = photoDataUrl || defaultPhoto;
+
+  const signatureHtml = `
+  
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px; width:100%; border-collapse:collapse;">
+    <tr>
+      <td align="left" style="padding:0; margin:0;">
+
+        <!--[if mso]>
+        <table cellpadding="0" cellspacing="0" border="0" width="600"><tr><td>
+        <![endif]-->
+
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse; max-width:600px;">
+
+          <!-- Logo i dane pracownika -->
+          <tr>
+            <td style="padding:0; margin:0;">
+              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr valign="top">
+
+                  <!-- Logo NESTFOAM -->
+                  <td width="150" valign="top" style="padding:0; margin:0;">
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+                      <tr>
+                        <td valign="top" style="height:100%;">
+                          <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e264f9809d5bf6f6b52ce_image%2010%20(1).png"
+                               width="140" alt="NESTFOAM Logo"
+                               style="display:block; width:140px; height:100%; object-fit:contain; border:0;">
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+
+                  <!-- Dane pracownika -->
+                  <td valign="top" style="padding:0; margin:0;">
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                      <tr>
+                        <!-- Zdjęcie -->
+                        <td width="150" valign="top" style="padding:0 16px 0 0;">
+                          <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+                            <tr>
+                              <td valign="top" style="height:100%;">
+                                <img src="${photo}"
+                                     width="140" style="display:block; border-radius:50%; border:0; height:100%; object-fit:cover;">
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                       
+                        <td valign="middle">
+                          <div style="font-family:PT Serif,'Times New Roman',serif; font-size:20px; font-weight:bold; line-height:22px;">
+                            ${name}
+                          </div>
+
+                          <div style="font-family:PT Serif,'Times New Roman',serif; font-size:12px; line-height:14px; padding-top:4px;">
+                            ${position}
+                          </div>
+
+                          <div style="font-family:PT Serif,'Times New Roman',serif; font-size:12px; line-height:14px; color:#777; padding-top:2px;">
+                            ${dept}
+                          </div>
+                          
+                          <table cellpadding="0" cellspacing="0" border="0" style="padding-top:10px;">
+                            <tr>
+                              <td width="18"><img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e271b3130c509d02e2bec_domain_24dp_E3E3E3_FILL0_wght200_GRAD0_opsz24%201.png" width="16" style="display:block;"></td>
+                              <td style="padding-left:6px; font-family:PT Serif,'Times New Roman',serif; font-size:11px; color:#000;">
+                                NESTFOAM – ${city}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td width="18" style="padding-top:6px;"><img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e27ee8fa268b101faf8b8_call_24dp_E3E3E3_FILL0_wght200_GRAD0_opsz24%201.png" width="16" style="display:block;"></td>
+                              <td style="padding-left:6px; padding-top:6px; font-family:PT Serif,'Times New Roman',serif; font-size:11px;">
+                                ${phone}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td width="18" style="padding-top:6px;"><img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e28b076b13e1c41110cf3_mail_24dp_E3E3E3_FILL0_wght200_GRAD0_opsz24%201.png" width="16" style="display:block;"></td>
+                              <td style="padding-left:6px; padding-top:6px; font-family:PT Serif,'Times New Roman',serif; font-size:11px;">
+                                <a href="mailto:${email}" style="color:#000; text-decoration:none;">${email}</a>
+                              </td>
+                            </tr>
+                          </table>
+
+                        </td>
+                      </tr>
+
+                      <!-- Claim i linki -->
+                      <tr>
+                        <td colspan="2" style="padding-top:12px;">
+                          <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                              <!-- Claim -->
+                              <td valign="middle">
+                                <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691f7a129fe6fd8a660174fa_claim_nowy%20(1).png"
+                                     width="250" style="display:block; width:250px; height:auto; border:0;">
+                              </td>
+
+                              <!-- Linki -->
+                              <td align="right" valign="middle" style="padding-top:12px;">
+                                <table cellpadding="0" cellspacing="0" border="0">
+                                  <tr>
+                                    <td valign="middle" style="padding-right:4px;">
+                                      <a href="https://www.nestfoam.pl">
+                                        <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/692415365468019559615f86_language_24dp_E3E3E3_FILL0_wght200_GRAD0_opsz24%201.png" width="16" height="16" style="display:block; border:0;">
+                                      </a>
+                                    </td>
+                                    <td valign="middle" style="white-space:nowrap; font-family:PT Serif,'Times New Roman',serif; font-size:11px; line-height:16px;">
+                                      <a href="https://www.nestfoam.pl" style="color:#000; text-decoration:none;">www.nestfoam.pl</a>
+                                    </td>
+                                    <td width="14" style="font-size:0; line-height:0;">&nbsp;</td>
+                                    <td valign="middle" style="padding-right:4px;">
+                                      <a href="https://www.facebook.com/NESTFOAM">
+                                        <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/692217b4f92c2fae33ba7a46_Frame%2021%20(1).png" width="20" height="16" style="display:block; border:0;">
+                                      </a>
+                                    </td>
+                                    <td valign="middle">
+                                      <a href="https://www.linkedin.com/company/nestfoam/">
+                                        <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e29895e6e9d1ca62db79c_Social%20Icons%20(1).png" width="16" height="16" style="display:block; border:0;">
+                                      </a>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Linia -->
+          <tr>
+            <td style="padding-top:2px; padding-bottom:4px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                <tr>
+                  <td style="border-bottom:2px solid #F2B324; font-size:1px; line-height:1px;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Certyfikaty -->
+          <tr>
+            <td>
+              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td width="160" valign="top">
+                    <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e29a9a3b83ea61189e73f_Frame%2013%20(3).png"
+                         width="120" style="display:block;">
+                  </td>
+                  <td valign="top">
+                    <table cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="2" style="background:#F2B324; width:2px;">&nbsp;</td>
+                        <td style="padding-left:8px; font-family:PT Serif,'Times New Roman',serif;">
+                          <div style="font-size:11px; font-weight:bold; color:#33373A;">NASZE CERTYFIKATY:</div>
+                          <table cellpadding="0" cellspacing="0" style="padding-top:6px;">
+                            <tr>
+                              <td style="padding-right:6px;"><img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e29eff825595e595677db_Frame%2015%20(2).png" height="45" style="display:block;"></td>
+                              <td style="padding-right:6px;"><img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e2a75a2e1b8f23aca18e7_image%2015%20(2).png" height="45" style="display:block;"></td>
+                              <td style="padding-right:6px;"><img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e2af26c0b0acbff1aefee_image%2014%20(2).png" height="45" style="display:block;"></td>
+                              <td><img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691e2b10e1f0eed2bdcefe05_image%2016.png" height="45" style="display:block;"></td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Dane firmy -->
+          <tr>
+            <td style="padding-top:10px; font-family:PT Serif,'Times New Roman',serif; font-size:9px; color:#444; line-height:12px;">
+              NESTFOAM Sp. z o.o. Sp. k., ul. Bartka Lasoty 10, 47-400 Racibórz, e-mail:
+              <a href="mailto:biuro@nestfoam.pl" style="color:#444; text-decoration:none;">biuro@nestfoam.pl</a><br>
+              NIP: 6392015599 | REGON: 380564521 | KRS: 0000737389, Sąd Rejonowy w Gliwicach,
+              X Wydział Gospodarczy Krajowego Rejestru Sądowego,<br>
+              Kapitał zakładowy: 1 191 000 PLN
+            </td>
+          </tr>
+
+          <!-- Grafika -->
+          <!-- <tr>
+            <td style="padding-top:15px;">
+              <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691f4e085e7ac6c684ff6802_Frame%2016.png"
+                   width="600" style="display:block; width:100%; max-width:600px; height:auto; border:0;">
+            </td>
+          </tr>-->
+
+
+        </table>
+
+        <!--[if mso]>
+        </td></tr></table>
+        <![endif]-->
+
+      </td>
+    </tr>
+  </table>`;
+
+  const iframe = document.getElementById("signatureIframe");
+  iframe.srcdoc = signatureHtml;
+
+  window._lastSignatureHtml = signatureHtml;
+}
+
+generateSignature();
+
+document.getElementById("downloadHtml").addEventListener("click", function(){
+  const content = window._lastSignatureHtml || "";
+  const blob = new Blob([content], {type: "text/html;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "nestfoam-signature.html"; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("downloadTxt").addEventListener("click", function(){
+  const content = window._lastSignatureHtml || "";
+  const blob = new Blob([content], {type: "text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "nestfoam-signature.txt"; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("copyBtn").addEventListener("click", function(){
+  const content = window._lastSignatureHtml || "";
+  navigator.clipboard.writeText(content)
+    .then(()=>alert("Skopiowano HTML"))
+    .catch(()=>alert("Błąd kopiowania"));
+});
+</script>
+
+</body>
+</html>
