@@ -309,7 +309,7 @@
       <div class="actions">
         <button id="downloadHtml">Pobierz HTML</button>
         <button id="downloadTxt">Pobierz TXT</button>
-        <button id="copyBtn" style="background:#444;color:#fff">Kopiuj do schowka</button>
+        <button id="copyBtn" style="background:#444;color:#fff">Kopiuj TXT do schowka</button>
       </div>
     </div>
   </div>
@@ -687,11 +687,12 @@ document.getElementById("downloadTxt").addEventListener("click", function(){
 document.getElementById("copyBtn").addEventListener("click", function(){
   const content = window._lastSignatureHtml || "";
   navigator.clipboard.writeText(content)
-    .then(()=>alert("Skopiowano HTML"))
+    .then(()=>alert("Skopiowano kod"))
     .catch(()=>alert("Błąd kopiowania"));
 });
 </script>
 
 </body>
 </html>
+
 
