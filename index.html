@@ -14,16 +14,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
   <style>
-    body { font-family: Barlow, serif; background:#C3C3C8; color:#444444; margin:0; padding:0; }
+
+    body { font-family: Barlow, serif; background:#C3C3C8; color:#444444; margin:0; padding:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
     header { display:flex; align-items:center; gap:20px; padding:20px 40px; border-bottom:2px solid #F2B61C; background:#444444; color:#ffffff}
     header img { width:80px; height:80px; border-radius:8px; object-fit:contain; }
     h1 { margin:0; font-size:48px; font-weight:400; }
 
-    .container { display:flex; gap:40px; padding:40px; align-items:flex-start; }
+    .container { display:flex; gap:40px; padding:40px; align-items:flex-start; box-sizing:border-box; }
 
     .form-card { flex:1; background:#fff; padding:20px; border-radius:12px; border:1px solid #ddd; box-shadow:0 10px 16px rgba(0,0,0,0.1); }
     label { display:block; margin-top:12px; font-weight:bold; }
-    input[type="text"], input[type="email"], input { width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-top:6px; box-sizing:border-box; }
+    input[type="text"], input[type="email"], input { width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-top:6px; box-sizing:border-box; font-size:14px; }
     button { background:#F2B61C; color:#444; border:none; padding:12px 30px; margin-top:20px; font-size:18px; font-weight:bold; border-radius:50px; cursor:pointer; }
     button:hover { opacity:0.90; }
 
@@ -34,6 +35,7 @@
       box-sizing:border-box;
       position:sticky;
       top:20px;
+      align-self:flex-start;
     }
 
     .iframe-wrap {
@@ -41,6 +43,7 @@
       overflow:auto;
       padding:4px;
       box-sizing:border-box;
+      background:transparent;
     }
 
     iframe {
@@ -50,8 +53,9 @@
       border:1px solid #ccc;
       border-radius:10px;
       display:block;
-background:#ffffff;
-padding:20px;
+      background:#ffffff;
+      padding:20px;
+      box-sizing:border-box;
     }
 
     .actions {
@@ -59,12 +63,6 @@ padding:20px;
       display:flex;
       gap:12px;
       flex-wrap:wrap;
-    }
-
-    @media(max-width:1100px){
-      .container{flex-direction:column;padding:20px;}
-      .preview{border-left:none;padding-left:0;position:static;}
-      iframe { width:100%; height:300px; }
     }
 
     /* MODAL KADROWANIA ZDJĘCIA */
@@ -76,7 +74,7 @@ padding:20px;
       justify-content:center;
       align-items:center;
       z-index:9999;
-	font-size:14px;
+      font-size:14px;
     }
     #cropBox {
       background:#fff;
@@ -85,6 +83,8 @@ padding:20px;
       max-width:90%;
       max-height:90%;
       text-align:center;
+      box-sizing:border-box;
+      overflow:auto;
     }
     #cropPreviewWrap {
       width:320px;
@@ -99,6 +99,128 @@ padding:20px;
     }
 
     #cropImage { max-width:100%; max-height:100%; display:block; }
+
+    
+    @media(max-width:1100px){
+      .container{flex-direction:column;padding:20px;}
+      .preview{border-left:none;padding-left:0;position:static;}
+      iframe { width:100%; height:300px; }
+    }
+
+    
+    @media (max-width: 768px) {
+
+      
+      header {
+        flex-direction:column;
+        text-align:center;
+        gap:10px;
+        padding:18px 16px;
+      }
+
+      header img {
+        width:60px;
+        height:60px;
+      }
+
+      header h1 {
+        font-size:28px;
+        line-height:1.15;
+        margin:0;
+      }
+
+      
+      .container {
+        flex-direction:column;
+        padding:14px;
+        gap:18px;
+      }
+
+      .form-card {
+        width:100%;
+        padding:16px;
+        box-sizing:border-box;
+      }
+
+      .preview {
+        width:100%;
+        padding-left:0;
+        border-left:none;
+        position:static;
+      }
+
+      .iframe-wrap {
+        width:100%;
+        padding:0;
+      }
+
+   
+      iframe {
+        width:100%;
+        height:420px;
+        max-width:100%;
+        padding:12px;
+        border-radius:8px;
+      }
+
+      
+      .actions {
+        flex-direction:column;
+        gap:8px;
+        margin-top:8px;
+      }
+
+      .actions button {
+        width:100%;
+        padding:12px;
+        border-radius:50px;
+        font-size:16px;
+        box-sizing:border-box;
+      }
+
+     
+      #photoPreview {
+        width:100px;
+        height:100px;
+        margin-top:10px;
+      }
+
+      
+      #cropBox {
+        width:95%;
+        padding:20px;
+      }
+
+      #cropPreviewWrap {
+        width:240px;
+        height:240px;
+      }
+
+      
+      input[type="text"], input[type="email"], input {
+        font-size:15px;
+        padding:12px;
+      }
+
+      
+      header h1 { word-break:break-word; }
+
+    }
+
+    
+    @media (max-width: 360px) {
+      iframe { height:360px; }
+      #cropPreviewWrap { width:200px; height:200px; }
+      header img { width:52px; height:52px; }
+      header h1 { font-size:24px; }
+      button { font-size:15px; padding:10px 16px; }
+    }
+
+   
+    button:focus, input:focus, textarea:focus {
+      outline:3px solid rgba(242,182,28,0.3);
+      outline-offset:2px;
+    }
   </style>
 </head>
 <body>
@@ -106,35 +228,38 @@ padding:20px;
 <!-- MODAL KADROWANIA ZDJĘCIA -->
 <div id="cropModal">
   <div id="cropBox">
- 
+
     <div id="cropPreviewWrap">
-  <img id="cropImage" alt="Do kadrowania" />
-</div>
-<h3 style="margin:16px 0 12px 0;">Wykadruj zdjęcie, przesuwając prostokątny obszar i zmieniając jego wielkość.<br>Zoom można zmienić, scrollując kółkiem myszy.</h3>
+      <img id="cropImage" alt="Do kadrowania" />
+    </div>
+    <h3 style="margin:16px 0 12px 0; font-weight:600; font-size:15px; color:#222;">
+      Wykadruj zdjęcie, przesuwając prostokątny obszar i zmieniając jego wielkość.<br>
+      Zoom można zmienić, scrollując kółkiem myszy.
+    </h3>
 
-<!-- PANELE NARZĘDZI -->
-<div style="margin-top:16px; text-align:center;">
+    <!-- PANELE NARZĘDZI -->
+    <div style="margin-top:16px; text-align:center;">
 
-  <!-- ZOOM -->
-  <div style="margin-bottom:18px; display:none">
-    <label style="font-weight:bold;">Zoom</label><br>
-    <input type="range" id="zoomSlider" min="0.2" max="3" step="0.01" value="1" style="width:260px;">
-  </div>
+      
+      <div style="margin-bottom:18px; display:none">
+        <label style="font-weight:bold;">Zoom</label><br>
+        <input type="range" id="zoomSlider" min="0.2" max="3" step="0.01" value="1" style="width:260px;">
+      </div>
 
-  <!-- ROTATE -->
-  <div style="margin-bottom:18px; display:none">
-    <label style="font-weight:bold;">Obrót</label><br>
-    <input type="range" id="rotateSlider" min="-180" max="180" step="1" value="0" style="width:260px;">
-  </div>
+      
+      <div style="margin-bottom:18px; display:none">
+        <label style="font-weight:bold;">Obrót</label><br>
+        <input type="range" id="rotateSlider" min="-180" max="180" step="1" value="0" style="width:260px;">
+      </div>
 
-  <!-- RESET -->
-  <button id="cropReset" style="margin-top:10px; background:#fff; border:1px solid; padding:10px 16px;">Reset</button>
+      <!-- RESET -->
+      <button id="cropReset" style="margin-top:10px; background:#fff; border:1px solid; padding:10px 16px;">Reset</button>
 
-  <div style="margin-top:2px; display:flex; gap:10px; justify-content:center;">
-    <button id="cropApply">Zastosuj</button>
-    <button id="cropCancel" style="background:#ccc;">Anuluj</button>
-  </div>
-</div>
+      <div style="margin-top:12px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <button id="cropApply" style="background:#F2B61C; color:#444; padding:10px 18px; border-radius:8px;">Zastosuj</button>
+        <button id="cropCancel" style="background:#ccc; color:#222; padding:10px 18px; border-radius:8px;">Anuluj</button>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -146,39 +271,41 @@ padding:20px;
 
 <div class="container">
 
-  <div class="form-card">
-    <label>Imię i nazwisko</label>
+  <div class="form-card" aria-labelledby="form-heading">
+    <h2 id="form-heading" style="font-size:18px; margin:0 0 8px 0;">Dane kontaktowe</h2>
+
+    <label for="name">Imię i nazwisko</label>
     <input id="name" placeholder="Jan Kowalski" type="text"/>
 
-    <label>Stanowisko</label>
+    <label for="position">Stanowisko</label>
     <input id="position" placeholder="Customer Service Manager" type="text"/>
 
-    <label>Departament</label>
+    <label for="dept">Departament</label>
     <input id="dept" placeholder="SALES DEPARTMENT" type="text"/>
 
-    <label>Miasto</label>
+    <label for="city">Miasto</label>
     <input id="city" placeholder="Racibórz" type="text"/>
 
-    <label>Telefon</label>
+    <label for="phone">Telefon</label>
     <input id="phone" placeholder="+48 123 456 789" type="text"/>
 
-    <label>Email</label>
+    <label for="email">Email</label>
     <input id="email" placeholder="jan.kowalski@nestfoam.pl" type="email"/>
 
-    <label>Zdjęcie (jpg/png)</label>
+    <label for="photo">Zdjęcie (jpg/png)</label>
     <input type="file" id="photo" accept="image/*" />
-    <img id="photoPreview" style="border-radius:50%; display:none; width:120px; height:120px; margin-top:10px; object-fit:cover;" />
+    <img id="photoPreview" style="border-radius:50%; display:none; width:120px; height:120px; margin-top:10px; object-fit:cover;" alt="Podgląd zdjęcia" />
 
     <button id="generateBtn" style="margin-top:20px;">Generuj stopkę</button>
   </div>
 
-  <div class="preview">
+  <div class="preview" aria-label="Podgląd stopki">
     <h2 style="font-size:30px; line-height:80%; margin-top:0px">PODGLĄD</h2>
 
-    <div class="iframe-wrap">
-      <iframe id="signatureIframe" sandbox="allow-same-origin"></iframe>
+    <div class="iframe-wrap" role="region" aria-label="Podgląd HTML">
+      <iframe id="signatureIframe" sandbox="allow-same-origin" title="Podgląd stopki"></iframe>
 
-      <!-- PRZYCISKI POD PODGLĄDEM -->
+    
       <div class="actions">
         <button id="downloadHtml">Pobierz HTML</button>
         <button id="downloadTxt">Pobierz TXT</button>
@@ -242,31 +369,38 @@ const zoomSlider = document.getElementById("zoomSlider");
 const rotateSlider = document.getElementById("rotateSlider");
 const cropReset = document.getElementById("cropReset");
 
-zoomSlider.addEventListener("input", () => {
-  if (!cropper) return;
-  const newVal = parseFloat(zoomSlider.value);
+if (zoomSlider) {
+  zoomSlider.addEventListener("input", () => {
+    if (!cropper) return;
+    const newVal = parseFloat(zoomSlider.value);
 
-  const prevZoom = cropper.getData().scaleX || 1;
-  const factor = newVal / prevZoom;
+    const data = cropper.getData();
+    const prevZoom = (data && data.scaleX) ? data.scaleX : 1;
+    const factor = newVal / prevZoom;
 
-  cropper.zoom(factor);
-});
+    cropper.zoom(factor);
+  });
+}
 
-rotateSlider.addEventListener("input", () => {
-  if (!cropper) return;
-  const deg = parseFloat(rotateSlider.value);
-  cropper.rotateTo(deg);
-});
+if (rotateSlider) {
+  rotateSlider.addEventListener("input", () => {
+    if (!cropper) return;
+    const deg = parseFloat(rotateSlider.value);
+    cropper.rotateTo(deg);
+  });
+}
 
 // RESET wszystkich ustawień
-cropReset.addEventListener("click", () => {
-  if (!cropper) return;
+if (cropReset) {
+  cropReset.addEventListener("click", () => {
+    if (!cropper) return;
 
-  cropper.reset();
+    cropper.reset();
 
-  zoomSlider.value = 1;
-  rotateSlider.value = 0;
-});
+    if (zoomSlider) zoomSlider.value = 1;
+    if (rotateSlider) rotateSlider.value = 0;
+  });
+}
 
 cropApply.addEventListener("click", () => {
   if (!cropper) return;
@@ -299,13 +433,24 @@ cropApply.addEventListener("click", () => {
   generateSignature();
 });
 
+// Re-generate when fields change
 ['name','position','dept','city','phone','email'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', generateSignature);
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', generateSignature);
+});
+
+document.getElementById("generateBtn").addEventListener("click", function(){
+  generateSignature();
+  // on mobile, scroll preview into view for convenience
+  try {
+    const preview = document.querySelector('.preview');
+    if (preview) preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {}
 });
 
 function escapeHtml(str){ return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* -CAŁA STOPKA- */
+
 function generateSignature(){
   const name = escapeHtml(document.getElementById("name").value);
   const position = escapeHtml(document.getElementById("position").value);
@@ -503,15 +648,6 @@ function generateSignature(){
             </td>
           </tr>
 
-          <!-- Grafika -->
-          <!-- <tr>
-            <td style="padding-top:15px;">
-              <img src="https://cdn.prod.website-files.com/6870d2c866689ccb626d3a34/691f4e085e7ac6c684ff6802_Frame%2016.png"
-                   width="600" style="display:block; width:100%; max-width:600px; height:auto; border:0;">
-            </td>
-          </tr>-->
-
-
         </table>
 
         <!--[if mso]>
@@ -558,3 +694,4 @@ document.getElementById("copyBtn").addEventListener("click", function(){
 
 </body>
 </html>
+
